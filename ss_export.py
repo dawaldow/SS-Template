@@ -6,7 +6,7 @@ from typing import Any, Optional
 
 import requests
 import urllib3
-from docx import Document
+from docx import Document, document
 from docx.enum.table import WD_CELL_VERTICAL_ALIGNMENT, WD_TABLE_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
@@ -843,8 +843,7 @@ def add_word_task_table(
         document.add_paragraph(
             f"Showing {len(display_records)} of "
             f"{len(records)} records. "
-            f"All records are included in the complete "
-            f"inventory later in this document."
+            f"See project_data.xlsx for the complete data set."
         )
 
     document.add_paragraph()
@@ -1063,7 +1062,7 @@ def create_word_document() -> None:
     styles["Heading 2"].font.name = "Aptos Display"
 
     title = document.add_heading(
-        "Project Health and Complete Task Inventory",
+        "Project Health Summary",
         level=0,
     )
     title.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -1079,9 +1078,8 @@ def create_word_document() -> None:
     )
 
     document.add_paragraph(
-        "This document contains both project-health summaries "
-        "and full record-level details for every task, parent row, "
-        "and phase included in the Smartsheet export."
+        "This document contains project-health summaries and "
+        "highlighted records requiring attention."
     )
 
     # ------------------------------------------------------
@@ -1225,11 +1223,13 @@ def create_word_document() -> None:
         overdue_phases,
     )
 
+    document.save(DOCX_FILE)
+
     # ------------------------------------------------------
     # FULL SEARCHABLE INVENTORIES
     # ------------------------------------------------------
 
-    document.add_page_break()
+    """document.add_page_break()
 
     add_complete_word_inventory(
         document,
@@ -1251,9 +1251,7 @@ def create_word_document() -> None:
         document,
         "Complete Phase Inventory",
         phase_rows,
-    )
-
-    document.save(DOCX_FILE)
+    ) """
 
 
 # ==========================================================
@@ -1348,7 +1346,7 @@ def create_excel_record_sheet(
         )
 
     worksheet.freeze_panes = "A2"
-    worksheet.auto_filter.ref = worksheet.dimensions
+    # worksheet.auto_filter.ref = worksheet.dimensions
 
     if records:
         table_reference = f"A1:{get_column_letter(len(headers))}{len(records) + 1}"
