@@ -6,13 +6,13 @@ from typing import Any, Optional
 
 import requests
 import urllib3
-from docx import Document, document
+from docx import Document
 from docx.enum.table import WD_CELL_VERTICAL_ALIGNMENT, WD_TABLE_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor
-from dotenv import load_dotenv, dotenv_values
+from dotenv import dotenv_values, load_dotenv
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.utils import get_column_letter
