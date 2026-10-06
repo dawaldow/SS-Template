@@ -10,7 +10,7 @@ echo.
 where py >nul 2>nul
 
 if %errorlevel%==0 (
-    .\SmartsheetExport.exe
+    .\ss_export.exe
 )
 
 if errorlevel 1 (
