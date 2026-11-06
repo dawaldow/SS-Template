@@ -181,7 +181,12 @@ response.raise_for_status()
 data = response.json()
 
 sheet_name = data.get("name", "Unnamed Smartsheet")
+workspace = data.get("workspace") or {}
+workspace_name = str(workspace.get("name") or "").strip()
+workspace_id = workspace.get("id")
+project_name = workspace_name or sheet_name
 
+print(f"Workspace  : {workspace_name or 'Not returned'}")
 print(f"Sheet Name : {sheet_name}")
 print(f"Rows       : {len(data.get('rows', []))}")
 
@@ -1069,7 +1074,10 @@ def create_word_document() -> None:
 
     subtitle = document.add_paragraph()
     subtitle.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    subtitle.add_run(sheet_name).bold = True
+    subtitle.add_run(project_name).bold = True
+    sheet_paragraph = document.add_paragraph()
+    sheet_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    sheet_paragraph.add_run(f"Smartsheet: {sheet_name}")
 
     generated_paragraph = document.add_paragraph()
     generated_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -1499,16 +1507,22 @@ def create_excel_summary_sheet(
 
     worksheet.merge_cells("A1:D1")
 
-    worksheet["A2"] = "Sheet"
-    worksheet["B2"] = sheet_name
+    worksheet["A2"] = "Full Project Name"
+    worksheet["B2"] = project_name
 
-    worksheet["A3"] = "Generated"
-    worksheet["B3"] = datetime.now().astimezone().strftime("%Y-%m-%d %H:%M:%S %Z (%z)")
+    worksheet["A3"] = "Workspace ID"
+    worksheet["B3"] = workspace_id or ""
 
-    worksheet["A5"] = "Metric"
-    worksheet["B5"] = "Count"
+    worksheet["A4"] = "Sheet"
+    worksheet["B4"] = sheet_name
 
-    for row in worksheet["A5:B5"]:
+    worksheet["A5"] = "Generated"
+    worksheet["B5"] = datetime.now().astimezone().strftime("%Y-%m-%d %H:%M:%S %Z (%z)")
+
+    worksheet["A7"] = "Metric"
+    worksheet["B7"] = "Count"
+
+    for row in worksheet["A7:B7"]:
         for cell in row:
             cell.fill = PatternFill(
                 fill_type="solid",
@@ -1522,7 +1536,7 @@ def create_excel_summary_sheet(
 
     for row_number, (metric_name, metric_value) in enumerate(
         summary_metrics,
-        start=6,
+        start=8,
     ):
         worksheet.cell(
             row=row_number,
@@ -1535,11 +1549,11 @@ def create_excel_summary_sheet(
             value=metric_value,
         )
 
-    summary_end_row = 5 + len(summary_metrics)
+    summary_end_row = 7 + len(summary_metrics)
 
     summary_table = Table(
         displayName="SummaryMetrics",
-        ref=f"A5:B{summary_end_row}",
+        ref=f"A7:B{summary_end_row}",
     )
 
     summary_table.tableStyleInfo = TableStyleInfo(
@@ -1619,7 +1633,7 @@ def create_excel_summary_sheet(
     worksheet.column_dimensions["C"].width = 18
     worksheet.column_dimensions["D"].width = 18
 
-    worksheet.freeze_panes = "A5"
+    worksheet.freeze_panes = "A7"
 
 
 def create_excel_workbook() -> None:
@@ -1721,6 +1735,9 @@ print("=" * 70)
 print("EXPORT COMPLETE")
 print("=" * 70)
 
+print(f"Project           : {project_name}")
+print(f"Workspace         : {workspace_name or 'Not returned'}")
+print(f"Workspace ID      : {workspace_id or 'Not returned'}")
 print(f"Sheet             : {sheet_name}")
 print(f"Leaf Tasks        : {len(tasks)}")
 print(f"Parent Rows       : {len(parent_rows)}")
