@@ -92,7 +92,7 @@ Include no more than five exceptions, ranked by executive importance.  Ensure th
 | 1 | [Verb-led action] | [Owner/Owner needed] | [Date/Today/Overdue] | [Result] |
 
 ## Upcoming Milestones
-Include only milestones due within 30 days.
+Include only milestones due within 30 days. Milestones are defined as any task that has zero (0) duration.
 
 | Milestone | Owner | Target date | Complete | Status / confidence |
 |---|---|---:|---:|---|
